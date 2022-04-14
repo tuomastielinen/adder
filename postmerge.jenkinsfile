@@ -59,11 +59,13 @@ pipeline {
             }
         }
         stage('Push git tag') {
-            agent { label 'docker' }
+            agent {
+                label 'docker'
+            }
             steps {
                 script {
                     try {
-                        container = docker.build("git", "-f git.dockerfile .")
+                        container = docker.build('git', '-f git.dockerfile .')
                         container.inside {
                             withCredentials([sshUserPrivateKey(
                                 credentialsId: 'github-tuomastielinen-priv', keyFileVariable: 'KEYFILE')]) {
@@ -71,7 +73,7 @@ pipeline {
                                     sh "git tag ${version_g}"
                                     sh "git push origin ${version_g}"
                                 }
-                            }
+                                }
                         }
                     } catch (Exception e) {
                         sh "git tag -d ${version_g} || true"
